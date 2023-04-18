@@ -24,31 +24,39 @@ declare -A indArray
 declare -A speedArray
 declare -A destroyArray
 
-isTargetDestroyed() { # Пропадает ли цель из топ 30, сразу после уничтожения (удаления файла)???
+#Уничтожаемые цели
+targetsToDestroy=""
+
+isTargetDestroyed() {
     isTargetActive=0
     isDestroyFileExist=0
     tInd=0
     while [ "$tInd" -lt "30" ]; do
-        if [ "${indArray[$tInd]}" == "$1" ] && 
-            [ "${speedArray[$tInd]%.*}" -gt "0" ]; then
-            isTargetActive=1
-            return
+        if [ "${indArray[$tInd]}" == "$1" ]; then
+            if [ "${speedArray[$tInd]%.*}" -gt "0" ]; then
+                isTargetActive=1
+            else
+                echo 3 #Ожидание запуска противоракеты (частный случай), координаты цели могли не успеть обновиться
+                return
+            fi
         fi
         ((tInd++))
     done
-    if [ "$(find $destroyDir $1 2>/dev/null)" ]; then
-        isDestroyFileExist=1
-    fi
-    if [ "$isTargetActive" == "0"  ]; then
-        if [ "$isDestroyFileExist" == "0"  ]; then
+    for i in $targetsToDestroy; do
+        if [ "$i" == "$1" ]; then
+            isDestroyFileExist=1
+        fi
+    done
+    if [ "$isTargetActive" == "0" ]; then
+        if [ "$isDestroyFileExist" == "0" ]; then
             echo 1
         else
             echo 2
         fi
         return
     fi
-    if [ "$isTargetActive" == "1"  ] &&
-        [ "$isDestroyFileExist" == "1"  ]; then
+    if [ "$isTargetActive" == "1" ] &&
+        [ "$isDestroyFileExist" == "1" ]; then
         echo 3 #Ожидание запуска противоракеты
         return
     fi
@@ -69,6 +77,7 @@ calcSpeed() {
 while [ 1 ]; do
     sleep 0.5
     #echo "new iter"
+    targetsToDestroy=$(ls -t $destroyDir 2>/dev/null)
     tmpTarget=$(ls -t $tmpDir 2>/dev/null | head -n 30)
     ind=0
     for i in $tmpTarget; do
@@ -117,22 +126,22 @@ while [ 1 ]; do
                     echo "Обнаружена цель ID:${indArray[$ind]} с координатами ${targetX} ${targetY} Speed: ${speedArray[$ind]}"
                 fi
 
-                if [ "$rockets" -ge "0" ] &&
-                    [ "${fixedTargets[${indArray[$ind]}]}" != "a" ]; then
+                if [ "${fixedTargets[${indArray[$ind]}]}" != "a" ]; then
+                    if [ "$rockets" -gt "0" ]; then
 
-                    echo "Выстрел по цели ID:${indArray[$ind]}"
-                    fixedTargets[${indArray[$ind]}]="a"
-                    j=0
-                    while [ "${destroyArray[$j]#*;}" == "n" ]; do
-                        ((j++))
-                    done
-                    destroyArray[$j]="${indArray[$ind]};n"
-                    touch "${destroyDir}${indArray[$ind]}"
-                    ((rockets--))
-                else
-                    echo "Боезапас исчерпан"
+                        echo "Выстрел по цели ID:${indArray[$ind]}"
+                        fixedTargets[${indArray[$ind]}]="a"
+                        j=0
+                        while [ "${destroyArray[$j]#*;}" == "n" ]; do
+                            ((j++))
+                        done
+                        destroyArray[$j]="${indArray[$ind]};n"
+                        touch "${destroyDir}${indArray[$ind]}"
+                        ((rockets--))
+                    else
+                        echo "Боезапас исчерпан"
+                    fi
                 fi
-
             fi
         done
 
