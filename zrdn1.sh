@@ -4,7 +4,7 @@ tmpDir="/tmp/GenTargets/Targets/"
 destroyDir="/tmp/GenTargets/Destroy/"
 
 #Скорости ББ БР
-minSpeed=(8000 250 50)
+minSpeed=(8000 251 50)
 maxSpeed=(10000 1000 250)
 targetType=("ББ БР" "К.ракета" "Самолет")
 
@@ -16,7 +16,7 @@ yCenter=3600000
 radius=900000
 
 #Боезапас
-rockets=10
+rockets=20
 
 declare -A hashArray
 declare -A fixedTargets
@@ -116,7 +116,7 @@ while [ 1 ]; do
         targetY=${targetXY#*,}
         distToTarget=$(calcSpeed "$targetXY" "$xCenter,$yCenter")
         #echo "Dist: $distToTarget Coords: $targetXY TEST: ${hashArray[${indArray[$ind]}]}"
-        for ((i = 0; i != 1; i++)); do
+        for ((i = 1; i != 3; i++)); do
             if [ ${speedArray[$ind]%.*} -ge ${minSpeed[$i]} ] &&
                 [ ${speedArray[$ind]%.*} -le ${maxSpeed[$i]} ] &&
                 [ ${distToTarget%.*} -le $radius ]; then
