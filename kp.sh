@@ -44,7 +44,6 @@ echoLog() {
 
 while :
 do
-    sleep 0.5
 
     if [ $pingStatus -ge $pingTimeout ]; then
         pingStatus=1
@@ -93,4 +92,5 @@ do
 
 
     ((pingStatus++))
+    sleep 0.5
 done

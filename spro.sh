@@ -7,7 +7,7 @@ destroyDir="/tmp/GenTargets/Destroy/"
 pingFile=messages/pingSpro
 
 #Скорости ББ БР
-minSpeed=(8000 250 50)
+minSpeed=(8000 251 50)
 maxSpeed=(10000 1000 250)
 targetType=("ББ БР" "К.ракета" "Самолет")
 
@@ -84,9 +84,6 @@ calcSpeed() {
 while [ 1 ]; do
 
     echo "live" > $pingFile
-
-    sleep 0.5
-    #echo "new iter"
     targetsToDestroy=$(ls -t $destroyDir 2>/dev/null)
     tmpTarget=$(ls -t $tmpDir 2>/dev/null | head -n 30)
     ind=0
@@ -158,5 +155,5 @@ while [ 1 ]; do
 
         ((ind++))
     done
-
+    sleep 0.5
 done

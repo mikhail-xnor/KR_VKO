@@ -3,6 +3,9 @@
 tmpDir="/tmp/GenTargets/Targets/"
 destroyDir="/tmp/GenTargets/Destroy/"
 
+#Связь
+pingFile=messages/pingZrdn1
+
 #Скорости ББ БР
 minSpeed=(8000 251 50)
 maxSpeed=(10000 1000 250)
@@ -26,6 +29,10 @@ declare -A destroyArray
 
 #Уничтожаемые цели
 targetsToDestroy=""
+
+Echo() {
+    echo "$1 sended" | rev
+}
 
 isTargetDestroyed() {
     isTargetActive=0
@@ -75,8 +82,8 @@ calcSpeed() {
 }
 
 while [ 1 ]; do
-    sleep 0.5
-    #echo "new iter"
+    
+    echo "live" > $pingFile
     targetsToDestroy=$(ls -t $destroyDir 2>/dev/null)
     tmpTarget=$(ls -t $tmpDir 2>/dev/null | head -n 30)
     ind=0
@@ -104,10 +111,10 @@ while [ 1 ]; do
             if [ "$checkTargetStatus" == "0" ]; then
                 fixedTargets[${destroyArray[$ind]%;*}]="f"
                 destroyArray[$ind]="${destroyArray[$ind]%;*};o"
-                echo "Промах по цели ID:${destroyArray[$ind]%;*}"
+                Echo "Промах по цели ID:${destroyArray[$ind]%;*}"
             elif [ "$checkTargetStatus" != "3" ]; then
                 destroyArray[$ind]="${destroyArray[$ind]%;*};d"
-                echo "Цель ID:${destroyArray[$ind]%;*} уничтожена!"
+                Echo "Цель ID:${destroyArray[$ind]%;*} уничтожена!"
             fi
         fi
 
@@ -123,13 +130,13 @@ while [ 1 ]; do
 
                 if [ "${fixedTargets[${indArray[$ind]}]}" == "" ]; then
                     fixedTargets[${indArray[$ind]}]="f"
-                    echo "Обнаружена цель ID:${indArray[$ind]} с координатами ${targetX} ${targetY} Speed: ${speedArray[$ind]}"
+                    Echo "Обнаружена цель ID:${indArray[$ind]} с координатами ${targetX} ${targetY} Speed: ${speedArray[$ind]}"
                 fi
 
                 if [ "${fixedTargets[${indArray[$ind]}]}" != "a" ]; then
                     if [ "$rockets" -gt "0" ]; then
 
-                        echo "Выстрел по цели ID:${indArray[$ind]}"
+                        Echo "Выстрел по цели ID:${indArray[$ind]}"
                         fixedTargets[${indArray[$ind]}]="a"
                         j=0
                         while [ "${destroyArray[$j]#*;}" == "n" ]; do
@@ -139,7 +146,7 @@ while [ 1 ]; do
                         touch "${destroyDir}${indArray[$ind]}"
                         ((rockets--))
                     elif [ "$rockets" == "0" ]; then
-                        echo "Боезапас исчерпан"
+                        Echo "Боезапас исчерпан"
                         ((rockets--))
                     fi
                 fi
@@ -148,5 +155,5 @@ while [ 1 ]; do
 
         ((ind++))
     done
-
+    sleep 0.5
 done
