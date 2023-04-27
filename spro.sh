@@ -95,7 +95,8 @@ while [ 1 ]; do
                         Echo "Выстрел по цели ID:${indArray[$ind]}"
                         fixedTargets[${indArray[$ind]}]="a"
                         j=0
-                        while [ "${destroyArray[$j]#*;}" != "d" ]; do
+                        while [ "${destroyArray[$j]#*;}" != "" ] &&
+                            [ "${destroyArray[$j]#*;}" != "d" ]; do
                             ((j++))
                         done
                         destroyArray[$j]="${indArray[$ind]};w"
