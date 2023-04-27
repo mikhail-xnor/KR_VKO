@@ -15,11 +15,11 @@ maxSpeed=(10000 1000 250)
 targetType=("ББ БР" "К.ракета" "Самолет")
 
 #Координаты круга
-xCenter=2500000
-yCenter=3600000
+xCenter=2545000
+yCenter=3636000
 
 #Радиус круга
-radius=2000000
+radius=900000
 
 #Боезапас
 rockets=10
@@ -106,8 +106,11 @@ while [ 1 ]; do
                 fi
             fi
         done
-
         ((ind++))
     done
+    if [ "$rockets" == "0" ]; then
+        Echo "Боезапас исчерпан"
+        ((rockets--))
+    fi
     sleep 0.5
 done

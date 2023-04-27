@@ -9,7 +9,7 @@ filesName=$(echo $0 | rev | cut -d '/' -f 1 | cut -d '.' -f 2 | rev)
 pingFile=messages/ping$filesName
 
 #Скорости ББ БР
-minSpeed=(8000 250 50)
+minSpeed=(8000 251 50)
 maxSpeed=(10000 1000 250)
 targetType=("ББ БР" "К.ракета" "Самолет")
 
@@ -27,8 +27,8 @@ azimutAngle=0
 angle=90
 
 #Координаты СПРО
-sproX=2500000
-sproY=3600000
+sproX=2545000
+sproY=3636000
 sproR=900000
 
 #Углы сектора относительно начала координат
