@@ -81,11 +81,11 @@ while [ 1 ]; do
                 [ "$inSector" == "1" ]; then
                 fixedTargets[${indArray[$ind]}]="f"
                 Echo "Обнаружена цель ID:${indArray[$ind]} с координатами ${targetX} ${targetY}"
+
                 lastTargetXY=${hashArray[${indArray[$ind]}]%;*}
                 lastTargetX=${lastTargetXY%,*}
                 lastTargetY=${lastTargetXY#*,}
-
-                moveToSpro=$(isMovesToSpro $lastX $lastY $X $Y)
+                moveToSpro=$(isMovesToSpro $lastTargetX $lastTargetY $targetX $targetY)
                 if (($moveToSpro == 1)); then
                     Echo "Цель ID:${indArray[$ind]} движется в направлении СПРО"
                 fi
