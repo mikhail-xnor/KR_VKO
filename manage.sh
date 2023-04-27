@@ -51,6 +51,7 @@ elif [ "$1" == "all" ]; then
     elif [ "$2" == "stop" ]; then
         for sys in ${systemsNames[@]}; do
             kill -9 $(ps aux | grep "$sys" | grep -v "grep" | head -n 1 | awk '{ print $2 }') &>/dev/null
+            sleep 0.1
         done
         echo "Все системы выключены"
     elif [ "$2" == "status" ]; then

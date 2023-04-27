@@ -8,6 +8,8 @@ pingDelay=5
 #Общий лог
 mainLogFile=logs/mainLog
 
+#Временный лог
+tmpLogFile=temp/logFile
 
 #Сообщения от систем
 messagesFile=messages/
@@ -77,20 +79,24 @@ do
             echoLog "$msg" "${logFile}${systemsNames[$i]}"
         fi
         if [ ${systemsStatus[$i]} == "1" ]; then
-            log=$(cat "${messagesFile}${systemsNames[$i]}" | tail -n $(expr $(cat "${messagesFile}${systemsNames[$i]}" | wc -l) - ${systemsMsgRead[$i]}))
-            OLDIFS=$IFS
-            IFS=$'\n'
-            lineCounter=${systemsMsgRead[$i]}
-            for line in $log; do
-                if [ "$(echo "$line" | cut -d ' ' -f 1 | rev)" == "sended" ]; then
-                    msg=$(echo "$line" | cut -d ' ' -f 2- | rev)
-                    msg=$(formatLogRow "${systemsLabels[$i]}" $msg)
-                    echoLog "$msg" "${logFile}${systemsNames[$i]}"
-                    ((lineCounter++))
-                fi
-            done
-            systemsMsgRead[$i]=$lineCounter
-            IFS=$OLDIFS
+            cp "${messagesFile}${systemsNames[$i]}" $tmpLogFile
+            linesNumber=$(cat $tmpLogFile | wc -l)
+            if [ $linesNumber -gt ${systemsMsgRead[$i]} ]; then
+                log=$(cat $tmpLogFile | tail -n $(expr $linesNumber - ${systemsMsgRead[$i]}))
+                OLDIFS=$IFS
+                IFS=$'\n'
+                lineCounter=${systemsMsgRead[$i]}
+                for line in $log; do
+                    if [ "$(echo "$line" | cut -d ' ' -f 1 | rev)" == "sended" ]; then
+                        msg=$(echo "$line" | cut -d ' ' -f 2- | rev)
+                        msg=$(formatLogRow "${systemsLabels[$i]}" $msg)
+                        echoLog "$msg" "${logFile}${systemsNames[$i]}"
+                        ((lineCounter++))
+                    fi
+                done
+                systemsMsgRead[$i]=$lineCounter
+                IFS=$OLDIFS
+            fi
         fi
     done
     if [ $pingStatus -ge $pingTimeout ]; then
