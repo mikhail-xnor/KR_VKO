@@ -48,7 +48,6 @@ while :
 do
     for i in ${!systemsNames[@]}; do
         if [ $pingStatus -ge $pingTimeout ]; then
-            pingStatus=1
             echo "ping" > "${pingFile}${systemsNames[$i]}"
         elif [ $pingStatus -ge $pingDelay ]; then
             if [ "$(cat ${pingFile}${systemsNames[$i]})" == "live" ]; then
@@ -69,9 +68,11 @@ do
         fi
         #Запись лога
         if [ ${systemsStatus[$i]} == "2" ]; then
+            systemsStatus[$i]=1
             msg=$(formatLogRow "${systemsLabels[$i]}" "работоспособность восстановлена")
             echoLog "$msg" "${logFile}${systemsNames[$i]}"
         elif [ ${systemsStatus[$i]} == "3" ]; then
+            systemsStatus[$i]=0
             msg=$(formatLogRow "${systemsLabels[$i]}" "вышла из строя")
             echoLog "$msg" "${logFile}${systemsNames[$i]}"
         fi
@@ -79,18 +80,23 @@ do
             log=$(cat "${messagesFile}${systemsNames[$i]}" | tail -n $(expr $(cat "${messagesFile}${systemsNames[$i]}" | wc -l) - ${systemsMsgRead[$i]}))
             OLDIFS=$IFS
             IFS=$'\n'
+            lineCounter=${systemsMsgRead[$i]}
             for line in $log; do
                 if [ "$(echo "$line" | cut -d ' ' -f 1 | rev)" == "sended" ]; then
                     msg=$(echo "$line" | cut -d ' ' -f 2- | rev)
                     msg=$(formatLogRow "${systemsLabels[$i]}" $msg)
                     echoLog "$msg" "${logFile}${systemsNames[$i]}"
-                    ((${systemsMsgRead[$i]}++))
+                    ((lineCounter++))
                 fi
             done
+            systemsMsgRead[$i]=$lineCounter
             IFS=$OLDIFS
         fi
     done
-
-    ((pingStatus++))
+    if [ $pingStatus -ge $pingTimeout ]; then
+        pingStatus=1
+    else
+        ((pingStatus++))
+    fi
     sleep 0.5
 done

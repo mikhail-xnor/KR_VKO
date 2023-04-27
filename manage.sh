@@ -24,6 +24,8 @@ printHelp() {
 
 systemsNames=( "kp" "rls1" "rls2" "rls3" "spro" "zrdn1" "zrdn2" "zrdn3" )
 
+declare -A systems
+
 systems["kp"]="./kp.sh"
 systems["rls1"]="./rls1.sh"
 systems["rls2"]="./rls2.sh"
@@ -34,10 +36,10 @@ systems["zrdn2"]="./zrdn2.sh"
 systems["zrdn3"]="./zrdn3.sh"
 
 systemMessages=messages/
-if [ $1 == "help" ]; then
+if [ "$1" == "help" ]; then
     printHelp
-elif [ $1 == "all" ]; then
-    if [ $2 == "start" ]; then
+elif [ "$1" == "all" ]; then
+    if [ "$2" == "start" ]; then
         for i in ${!systemsNames[@]}; do
             if [ $i == 0 ]; then
                 ${systems[${systemsNames[$i]}]} &
@@ -45,25 +47,25 @@ elif [ $1 == "all" ]; then
                 ${systems[${systemsNames[$i]}]} 1>>"${systemMessages}${systemsNames[$i]}" &
             fi
         done
-        echo "Все системы активированы"
-    elif [ $2 == "stop" ]; then
+        echo "Все системы активны"
+    elif [ "$2" == "stop" ]; then
         for sys in ${systemsNames[@]}; do
-            kill -9 $(ps aux | grep "$sys" | head -n 1 | awk '{ print $2 }') &>/dev/null
+            kill -9 $(ps aux | grep "$sys" | grep -v "grep" | head -n 1 | awk '{ print $2 }') &>/dev/null
         done
         echo "Все системы выключены"
-    elif [ $2 == "status" ]; then
+    elif [ "$2" == "status" ]; then
         echo "status"
     else 
         echo "Передан некорректный аргумент 2"
     fi
-elif [ $1 != "" ]; then
+elif [ "$1" != "" ]; then
     manageSystem=${systems["$1"]}
     if [ $manageSystem != "" ]; then
-        if [ $2 == "start" ]; then
+        if [ "$2" == "start" ]; then
             $manageSystem 1>>"${systemMessages}$1" &
-            echo "Система $1 активирована"
-        elif [ $2 == "stop" ]; then
-            kill -9 $(ps aux | grep "$1" | head -n 1 | awk '{ print $2 }') &>/dev/null
+            echo "Система $1 активина"
+        elif [ "$2" == "stop" ]; then
+            kill -9 $(ps aux | grep "$1" | grep -v "grep" | head -n 1 | awk '{ print $2 }') &>/dev/null
             echo "Система $1 выключена"
         else 
             echo "Передан некорректный аргумент 2"
