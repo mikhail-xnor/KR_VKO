@@ -70,6 +70,8 @@ while [ 1 ]; do
                 destroyArray[$ind]="${destroyArray[$ind]%;*};d"
                 Echo "Цель ID:${destroyArray[$ind]%;*} уничтожена"
             fi
+        elif [ "${destroyArray[$ind]#*;}" == "w" ]; then
+            destroyArray[$ind]="${destroyArray[$ind]%;*};n"
         fi
 
         targetXY=${hashArray[${indArray[$ind]}]#*;}
@@ -93,10 +95,10 @@ while [ 1 ]; do
                         Echo "Выстрел по цели ID:${indArray[$ind]}"
                         fixedTargets[${indArray[$ind]}]="a"
                         j=0
-                        while [ "${destroyArray[$j]#*;}" == "n" ]; do
+                        while [ "${destroyArray[$j]#*;}" != "d" ]; do
                             ((j++))
                         done
-                        destroyArray[$j]="${indArray[$ind]};n"
+                        destroyArray[$j]="${indArray[$ind]};w"
                         touch "${destroyDir}${indArray[$ind]}"
                         ((rockets--))
                     elif [ "$rockets" == "0" ]; then
