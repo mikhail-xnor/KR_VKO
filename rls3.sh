@@ -2,6 +2,12 @@
 
 tmpDir="/tmp/GenTargets/Targets/"
 
+#Наименование файлов
+filesName=$(echo $0 | rev | cut -d '/' -f 1 | cut -d '.' -f 2 | rev)
+
+#Связь
+pingFile=messages/ping$filesName
+
 #Скорости ББ БР
 minSpeed=(8000 250 50)
 maxSpeed=(10000 1000 250)
@@ -40,6 +46,7 @@ source ./helpFunctions.sh
 
 while [ 1 ]; do
     
+    echo "live" > $pingFile
     tmpTarget=$(ls -t $tmpDir 2>/dev/null | head -n 30)
     ind=0
     for i in $tmpTarget; do
@@ -86,5 +93,5 @@ while [ 1 ]; do
         done
         ((ind++))
     done
-    sleep 0.5
+    sleep 0.3
 done

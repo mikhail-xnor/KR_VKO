@@ -3,8 +3,11 @@
 tmpDir="/tmp/GenTargets/Targets/"
 destroyDir="/tmp/GenTargets/Destroy/"
 
+#Наименование файлов
+filesName=$(echo $0 | rev | cut -d '/' -f 1 | cut -d '.' -f 2 | rev)
+
 #Связь
-pingFile=messages/pingSpro
+pingFile=messages/ping$filesName
 
 #Скорости ББ БР
 minSpeed=(8000 251 50)
