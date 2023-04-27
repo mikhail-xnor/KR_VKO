@@ -30,56 +30,7 @@ declare -A destroyArray
 #Уничтожаемые цели
 targetsToDestroy=""
 
-Echo() {
-    echo "$1 sended" | rev
-}
-
-isTargetDestroyed() {
-    isTargetActive=0
-    isDestroyFileExist=0
-    tInd=0
-    while [ "$tInd" -lt "30" ]; do
-        if [ "${indArray[$tInd]}" == "$1" ]; then
-            if [ "${speedArray[$tInd]%.*}" -gt "0" ]; then
-                isTargetActive=1
-            else
-                echo 3 #Ожидание запуска противоракеты (частный случай), координаты цели могли не успеть обновиться
-                return
-            fi
-        fi
-        ((tInd++))
-    done
-    for i in $targetsToDestroy; do
-        if [ "$i" == "$1" ]; then
-            isDestroyFileExist=1
-        fi
-    done
-    if [ "$isTargetActive" == "0" ]; then
-        if [ "$isDestroyFileExist" == "0" ]; then
-            echo 1 #Цель была уничтожена
-        else
-            echo 2 #Цель умерла по естественным причинам :)
-        fi
-        return
-    fi
-    if [ "$isTargetActive" == "1" ] &&
-        [ "$isDestroyFileExist" == "1" ]; then
-        echo 3 #Ожидание запуска противоракеты
-        return
-    fi
-    echo 0 #Промах
-}
-
-calcSpeed() {
-    local X0=${1%,*}
-    local Y0=${1#*,}
-
-    local X1=${2%,*}
-    local Y1=${2#*,}
-
-    local speed=$(echo "scale=2; sqrt(($X1-$X0)^2+($Y1-$Y0)^2)" | bc)
-    echo $speed
-}
+source ./helpFunctions.sh
 
 while [ 1 ]; do
 
