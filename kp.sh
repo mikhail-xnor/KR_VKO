@@ -8,6 +8,12 @@ pingDelay=5
 #Общий лог
 mainLogFile=logs/mainLog
 
+#Подключение БД
+databasePath=db/dbVKOLogs.db
+
+#Создание таблиц БД
+sqlInitDbPath=createDB.sql
+
 #Временный лог
 tmpLogFile=temp/logFile
 
@@ -26,15 +32,6 @@ systemsStatus=( 0 0 0 0 0 0 0 )
 #Количество считанных сообщений
 systemsMsgRead=( 0 0 0 0 0 0 0 )
 
-
-#СПРО
-#sproStatus=0
-#pingSpro=messages/pingSpro
-#messagesSpro=messages/spro
-#logSpro=logs/spro
-#sproLogLine=0
-
-
 formatLogRow() {
     systemTime=$(date +"%d.%m %H:%M:%S")
     echo "$systemTime $1 $2"
@@ -43,8 +40,14 @@ formatLogRow() {
 echoLog() {
     echo "$1" >> $mainLogFile
     echo "$1" >> $2
+    sqlite3 $databasePath "INSERT INTO log (msg) VALUES ('$1')"
 }
 
+if [ -f $databasePath ]; then
+    sqlite3 $databasePath < $sqlInitDbPath
+fi
+
+#trap "closeDb" EXIT
 
 while :
 do
