@@ -52,7 +52,7 @@ echoLog() {
     sqlite3 $databasePath "INSERT INTO log (msg) VALUES ('$1')"
 }
 
-if [ -f $databasePath ]; then
+if [ ! -f $databasePath ]; then
     sqlite3 $databasePath < $sqlInitDbPath
 fi
 
