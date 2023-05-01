@@ -1,9 +1,16 @@
 #!/bin/bash
 
-tmpDir="/tmp/GenTargets/Targets/"
+[ $EUID == 0 ] && echo "Систему ВКО нельзя запускать с правами администратора!" && exit 1
+[ "$(uname -s)" != "Linux" ] && echo "Стартовая система отлична от Linux!" && exit 1
+[ "$SHELL" != "/bin/bash" ] && echo "Командный интерпретатор отличен от /bin/bash!" && exit 1
 
 #Наименование файлов
 filesName=$(echo $0 | rev | cut -d '/' -f 1 | cut -d '.' -f 2 | rev)
+
+[ $(ps aux | grep "$filesName" | grep -v "grep" | wc -l) -gt 2 ] && echo "Один экземпляр уже запущен!" && exit 1
+
+#Директория целей
+tmpDir="/tmp/GenTargets/Targets/"
 
 #Связь
 pingFile=messages/ping$filesName
