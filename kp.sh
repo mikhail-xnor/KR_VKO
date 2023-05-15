@@ -48,8 +48,9 @@ formatLogRow() {
 
 echoLog() {
     echo "$1" >> $mainLogFile
-    echo "$1" >> $2
-    sqlite3 $databasePath "INSERT INTO log (msg) VALUES ('$1')"
+    echo "$1" >> "${2}${3}"
+    sqlite3 $databasePath "INSERT INTO main_log (msg) VALUES ('$1')"
+    sqlite3 $databasePath "INSERT INTO ${3}_log (msg) VALUES ('$1')"
 }
 
 if [ ! -f $databasePath ]; then
@@ -84,11 +85,11 @@ do
         if [ ${systemsStatus[$i]} == "2" ]; then
             systemsStatus[$i]=1
             msg=$(formatLogRow "${systemsLabels[$i]}" "работоспособность восстановлена")
-            echoLog "$msg" "${logFile}${systemsNames[$i]}"
+            echoLog "$msg" "${logFile}" "${systemsNames[$i]}"
         elif [ ${systemsStatus[$i]} == "3" ]; then
             systemsStatus[$i]=0
             msg=$(formatLogRow "${systemsLabels[$i]}" "вышла из строя")
-            echoLog "$msg" "${logFile}${systemsNames[$i]}"
+            echoLog "$msg" "${logFile}" "${systemsNames[$i]}"
         fi
         if [ ${systemsStatus[$i]} == "1" ]; then
             cp "${messagesFile}${systemsNames[$i]}" $tmpLogFile
@@ -102,7 +103,7 @@ do
                     if [ "$(echo "$line" | cut -d ' ' -f 1 | rev)" == "sended" ]; then
                         msg=$(echo "$line" | cut -d ' ' -f 2- | rev)
                         msg=$(formatLogRow "${systemsLabels[$i]}" $msg)
-                        echoLog "$msg" "${logFile}${systemsNames[$i]}"
+                        echoLog "$msg" "${logFile}" "${systemsNames[$i]}"
                         ((lineCounter++))
                     fi
                 done
