@@ -80,6 +80,11 @@ while [ 1 ]; do
         elif [ "${destroyArray[$ind]#*;}" == "w" ]; then
             destroyArray[$ind]="${destroyArray[$ind]%;*};n"
         fi
+        ((ind++))
+    done
+
+    ind=0
+    while [ "$ind" -lt "30" ]; do
 
         targetXY=${hashArray[${indArray[$ind]}]#*;}
         targetX=${targetXY%,*}
